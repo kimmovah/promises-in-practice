@@ -1,6 +1,7 @@
 # Promises in practice
 A handful of examples on how to deal with common Promise related
-situations in JS.
+situations in JS. If you are not familiar with Promises at all or async in JS
+this is a very good resource to start: [You don't know JS: Async & performance](https://github.com/getify/You-Dont-Know-JS/tree/master/async%20%26%20performance)
 
 ## Example 1: Making callback code return Promises
 
