@@ -1,24 +1,23 @@
 # Promises in practice
 A handful of examples on how to deal with common Promise related
-problems in JS.
+situations in JS.
 
+## Example 1: Making callback code return Promises
 
-## Example 1: Making callback code return promises
+Wrap callback functions with a `new Promise()` to make old
+callback code work with Promises.
+
+When dealing with code that uses callbacks for async
+you need to wrap the callback function with a new 
+Promise instance and resolve/reject
+it in the callback.
+
+Note: This is really the only time when you need to
+use `new Promise()`. Once you have a Promise instance,
+it will always return another Promise instance when
+`then()` is called. You can just chain from that.
 
 ```javascript
-/** Wrap callback functions with a new Promise
- *
- * When dealing with code that uses callbacks for async
- * you need to wrap the callback function with a new 
- * promise instance and resolve/reject
- * it in the callback.
- *
- * Note: This is really the only time when you need to
- * use new Promise(). Once you have Promise instance,
- * it will always return another promise instance when
- * then() is called. You can just chain from that.
- * See examples below.
- */
 function myPromiseReturningFn() {
   return new Promise((resolve, reject) => {
     doAsyncStuffWithCb((err, result) => {
@@ -38,23 +37,18 @@ myPromiseReturningFn()
 .catch((err) => {
   //handle async error
 });
-
-// then() and catch() blocks pretty much work the same way as try/catch
-// but with async.
-
 ```
+`then()` and `catch()` blocks pretty much work the same way as try/catch
+but with async.
 
-## Example 2: Basic promise chaining
+## Example 2: Basic Promise chaining
+Let's assume a situation where we get a user and then get the user's friends.
+So it's two async calls in sequence.
+
+Since calling `then()` on a Promise always generates a new
+Promise, we can chain the two async functions nicely.
 
 ```javascript
-
-/**
- * Let's assume a situation where we get a user
- * and then get the user's friends.
- *
- * Since calling then() on a promise always generates a new
- * promise, we can chain the two async functions nicely.
- */
 getUser()
 .then((user) => {
   // do another async action
@@ -65,9 +59,8 @@ getUser()
 });
 
 ```
-
 Basic rule here is that when ever you have some async action within
-then() block, return it and chain another then(). This avoids the nesting hell.
+`then()` block, return it and chain another `then()`. You should never see `then()` within another `then()`. Don't go into the pyramid of doom.
 
 ```javascript
 // same functionality as above, but with nesting
@@ -79,9 +72,8 @@ getUser()
     // do something with friends data.
   });
 });
-
-// imagine you have 5 async calls you need to do in sequence. The nesting would be unmanageable.
 ```
+Imagine you have 5 async calls you need to do in sequence. The nesting would be unmanageable. We would be back in the old callback pyramids.
 
 ## Example 3: Error handling
 Promise.reject() will create a new Promise instance that is already rejected with the given value. We can use that to chain the error
@@ -91,6 +83,8 @@ handling.
 getUser()
 .catch((err) => {
   log('getting user failed: ', err);
+  // returning a rejection will be caught by the next catch() block.
+  // then() blocks are skipped.
   return Promise.reject(err);
 })
 .then((user) => {
@@ -150,13 +144,11 @@ myAsyncFn()
 ```
 
 ## Example 5: Function returning both sync and async results
+Always return a Promise even if you can return synchronously,
+so that the dev using your API doesn't have to worry about sync/async results.
+`Promise.resolve()` creates a Promise and resolves it immediately with any value passed to it.
 
 ```javascript
-/**
- * Always return a Promise even if you can return synchronously,
- * so that the dev using your fn doesn't
- * have to worry about sync/async results.
- */
 getStuff() {
   cachedResults = checkCache();
   if (cachedResults) {
@@ -177,15 +169,15 @@ getStuff()
 
 ## Example 6: Parallel async actions
 
-Getting multiple things at the same time.
+Get multiple things at the same time.
 ```javascript
 function getStuffAndThings() {
   let promises = [
     getStuff(),
     getThings()
   ];
-  // Waits for all promises to be resolved.
-  // Rejects if any promise in the array rejects.
+  // Waits for all Promises to be resolved.
+  // Rejects if any Promise in the array rejects.
   return Promise.all(promises);
 }
 
@@ -194,3 +186,14 @@ getStuffAndThings()
   // do stuff with stuff and things
 });
 ```
+
+## Stuff to read
+
+More great Promise examples:
+[We have a problem with promises](https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
+
+Asynchronous JavaScript in detail: [You don't know JS: Async & performance](https://github.com/getify/You-Dont-Know-JS/tree/master/async%20%26%20performance)
+
+I highly recommend the whole "You don't know JS" series to anyone wanting
+to know more about other weird JS mechanics and what you can encounter when you
+work with JS code bases.
