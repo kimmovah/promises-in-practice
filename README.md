@@ -199,4 +199,4 @@ I highly recommend the whole "You don't know JS" series to anyone wanting
 to know more about other weird JS mechanics and what you can encounter when you
 work with JS code bases.
 
-Also when you feel confident with Promises, check out async/await syntax.
+Also when you feel confident with Promises, check out async/await syntax (ES7 only though).
