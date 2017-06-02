@@ -20,7 +20,7 @@ it will always return another Promise instance when
 ```javascript
 function myPromiseReturningFn() {
   return new Promise((resolve, reject) => {
-    doAsyncStuffWithCb((err, result) => {
+    myCallbackFn((err, result) => {
       if (err) {
         reject(err);
       } else {
@@ -67,7 +67,7 @@ Basic rule here is that when ever you have some async action within
 getUser()
 .then((user) => {
   // do another async action
-  return getUsersFriends(user);
+  return getUsersFriends(user)
   .then((friends) => {
     // do something with friends data.
   });
@@ -81,23 +81,23 @@ handling.
 
 ```javascript
 getUser()
-.catch((err) => {
-  log('getting user failed: ', err);
+.catch((userError) => {
+  log('getting user failed: ', userError);
   // returning a rejection will be caught by the next catch() block.
   // then() blocks are skipped.
-  return Promise.reject(err);
+  return Promise.reject(userError);
 })
 .then((user) => {
   return getUsersFriends(user)
-  .catch((err) => {
-    log('getting friends failed: ', err);
-    return Promise.reject(err);
+  .catch((friendsError) => {
+    log('getting friends failed: ', friendsError);
+    return Promise.reject(friendsError);
   })
 })
 .then((friends) => {
   // do something with friends data.
 })
-.catch((err) => {
+.catch((error) => {
   doCleanup();
 });
 ```
@@ -197,3 +197,5 @@ Asynchronous JavaScript in detail: [You don't know JS: Async & performance](http
 I highly recommend the whole "You don't know JS" series to anyone wanting
 to know more about other weird JS mechanics and what you can encounter when you
 work with JS code bases.
+
+Also when you feel confident with Promises, check out async/await syntax.
