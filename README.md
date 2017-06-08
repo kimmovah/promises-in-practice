@@ -202,7 +202,7 @@ getUser()
   // do another async action
   return getUsersFriends(user);
 })
-.then((friends, user) => {
+.then((friends) => {
   doSomethingWith(friends, user);
 });
 
