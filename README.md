@@ -188,6 +188,37 @@ getStuffAndThings()
 });
 ```
 
+## Example 7: Using `Promise.all()` to pass multiple things in the chain
+With `Promise.all()` and ES6 argument destructing we have a clean way of passing multiple things to the next
+`then()` block without having to use variables defined in the scope that wraps the chain.
+Let's take the previous user and his friends example.
+
+```javascript
+// with scope variable
+let user;
+getUser()
+.then((userData) => {
+  user = userData
+  // do another async action
+  return getUsersFriends(user);
+})
+.then((friends, user) => {
+  doSomethingWith(friends, user);
+});
+
+// with Promise.all()
+getUser()
+.then((user) => {
+  // do another async action
+  return Promise.all([getUsersFriends(user), user]);
+})
+.then(([friends, user]) => {
+  doSomethingWith(friends, user);
+});
+
+```
+Scope variable is not so bad if you have a short chain and you can see the full implementation in one glance, but if the chain is long or you have multiple sets of data you need to keep tabs on, I'd recommend passing data with `Promise.all()`.
+
 ## Stuff to read
 
 More great Promise examples:
